@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <queue>
 #include <actionlib/server/simple_action_server.h>
-#include <robosar_controller/RobosarControllerAction.h>
+#include <mtg_controller/mtgControllerAction.h>
 
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #include <tf/tf.h>
@@ -21,7 +21,7 @@
 #include <nav_msgs/Odometry.h>
 
 #include <kdl/frames.hpp>
-#include <robosar_controller/PurePursuitConfig.h>
+#include <mtg_controller/PurePursuitConfig.h>
 #include <angles/angles.h>
 
 class LGControllerAction
@@ -62,11 +62,11 @@ protected:
 
   std::string action_name_;
   // create messages that are used to published feedback/result
-  robosar_controller::RobosarControllerFeedback feedback_;
-  robosar_controller::RobosarControllerResult result_;
+  mtg_controller::mtgControllerFeedback feedback_;
+  mtg_controller::mtgControllerResult result_;
 
 public:
-  actionlib::SimpleActionServer<robosar_controller::RobosarControllerAction> as_; // NodeHandle instance must be created before this line. Otherwise strange error occurs.
+  actionlib::SimpleActionServer<mtg_controller::mtgControllerAction> as_; // NodeHandle instance must be created before this line. Otherwise strange error occurs.
 
 
   LGControllerAction(std::string name) :
@@ -83,7 +83,7 @@ public:
     as_.start();
   }
 
-  void executeCB(const robosar_controller::RobosarControllerGoalConstPtr &goal)
+  void executeCB(const mtg_controller::mtgControllerGoalConstPtr &goal)
   {
     // helper variables
     ros::Rate r(1);
@@ -94,7 +94,7 @@ public:
     controller_it = 0; //Setting controller iterator to 0 every time action is called
     receivePath(goal->path);
     controller_timer = nh_.createTimer(ros::Duration(controller_period_s),boost::bind(&LGControllerAction::computeVelocities, this, _1));
-    pub_vel_ = nh_.advertise<geometry_msgs::Twist>("/robosar_agent_bringup_node/"+action_name_+"/cmd_vel", 1);
+    pub_vel_ = nh_.advertise<geometry_msgs::Twist>("/mtg_agent_bringup_node/"+action_name_+"/cmd_vel", 1);
     while(!goal_reached_) {
       
       if (as_.isPreemptRequested() || !ros::ok())
@@ -124,7 +124,7 @@ public:
   }
   void receivePath(nav_msgs::Path new_path)
   {
-    ROS_INFO("[RoboSAR Controller-%s] Receiving path!",&action_name_[0]);
+    ROS_INFO("[mtg Controller-%s] Receiving path!",&action_name_[0]);
 
     if(new_path.poses.size()>0)
     {
@@ -193,7 +193,7 @@ public:
     // path is feasible.
     // Callbacks are non-interruptible, so this will
     // not interfere with velocity computation callback.
-    ROS_INFO("[RoboSAR Controller-%s] Trajectory size %ld Cartesian path size %ld goal queue %ld",
+    ROS_INFO("[mtg Controller-%s] Trajectory size %ld Cartesian path size %ld goal queue %ld",
                                           &action_name_[0],path_.size(), cartesian_path_.poses.size(), goalQueue.size());
 
   }
@@ -231,11 +231,11 @@ public:
       return;
     }
     double yaw = tf::getYaw(tf.transform.rotation);
-    ROS_INFO("[RoboSAR Controller-%s]  Transform x: %f y:%f yaw:%f",&action_name_[0],tf.transform.translation.x,tf.transform.translation.y,yaw);
+    ROS_INFO("[mtg Controller-%s]  Transform x: %f y:%f yaw:%f",&action_name_[0],tf.transform.translation.x,tf.transform.translation.y,yaw);
 
     if(rotate_to_global_plan) {
         double angle_to_global_plan = calculateGlobalPlanAngle(tf.transform.translation.x,tf.transform.translation.y,yaw);
-        ROS_INFO("[RoboSAR Controller-%s] Shortest angle to goal %f",&action_name_[0],angle_to_global_plan);
+        ROS_INFO("[mtg Controller-%s] Shortest angle to goal %f",&action_name_[0],angle_to_global_plan);
         rotate_to_global_plan = rotateToOrientation(angle_to_global_plan,0.1);
     }
     else {
@@ -301,9 +301,9 @@ public:
       pub_vel_.publish(cmd_vel_);
 
       if(path_.empty())
-        ROS_INFO("[RoboSAR Controller-%s]: CMD_LIN %f CMD_ANG %f",&action_name_[0],cmd_vel_.linear.x, cmd_vel_.angular.z);
+        ROS_INFO("[mtg Controller-%s]: CMD_LIN %f CMD_ANG %f",&action_name_[0],cmd_vel_.linear.x, cmd_vel_.angular.z);
       else
-        ROS_INFO("[RoboSAR Controller-%s]: CMD_LIN %f CMD_ANG %f Tracking %f %f at %f",&action_name_[0],cmd_vel_.linear.x, cmd_vel_.angular.z,
+        ROS_INFO("[mtg Controller-%s]: CMD_LIN %f CMD_ANG %f Tracking %f %f at %f",&action_name_[0],cmd_vel_.linear.x, cmd_vel_.angular.z,
                                                                       path_.front()[0],path_.front()[1],path_.front()[2]);
 
       // Publish the lookahead target transform.
@@ -325,7 +325,7 @@ public:
       it++;
       path_.pop();
     }
-    ROS_INFO("[RoboSAR Controller] Popped %d/%ld velocities with time elapsed %f",it,path_.size(),time_elapsed);
+    ROS_INFO("[mtg Controller] Popped %d/%ld velocities with time elapsed %f",it,path_.size(),time_elapsed);
 
   }
   void ppProcessLookahead(geometry_msgs::Transform current_pose) {
@@ -347,7 +347,7 @@ public:
         
         // TODO: See how the above conversion can be done more elegantly
         // using tf2_kdl and tf2_geometry_msgs
-        ROS_INFO("[RoboSAR Controller-%s]: Lookahead X: %f Y: %f",&action_name_[0],lookahead_.transform.translation.x , lookahead_.transform.translation.y);
+        ROS_INFO("[mtg Controller-%s]: Lookahead X: %f Y: %f",&action_name_[0],lookahead_.transform.translation.x , lookahead_.transform.translation.y);
         break;
       }
     }
@@ -381,7 +381,7 @@ public:
                                  lookahead_.transform.rotation.y,
                                  lookahead_.transform.rotation.z,
                                  lookahead_.transform.rotation.w);
-        ROS_INFO("[RoboSAR Controller-%s]:***** Lookahead X: %f Y: %f",&action_name_[0],lookahead_.transform.translation.x , lookahead_.transform.translation.y);
+        ROS_INFO("[mtg Controller-%s]:***** Lookahead X: %f Y: %f",&action_name_[0],lookahead_.transform.translation.x , lookahead_.transform.translation.y);
     }
 
   }
@@ -413,7 +413,7 @@ public:
       }
       else
       {
-        ROS_INFO("[RoboSAR Controller-%s] Rotate to orientation complete!",&action_name_[0]);
+        ROS_INFO("[mtg Controller-%s] Rotate to orientation complete!",&action_name_[0]);
         cmd_vel_.linear.x = 0.0;
         cmd_vel_.angular.z = 0.0;
         pub_vel_.publish(cmd_vel_);
@@ -445,21 +445,21 @@ public:
     // Apply limits
     if ( std::isnan(cmd_robot.vector.x) || std::isnan(cmd_robot.vector.y) || std::isnan(theta) )
     {
-      ROS_WARN("[RoboSAR Controller]: Output velocity contains NaN!");
+      ROS_WARN("[mtg Controller]: Output velocity contains NaN!");
       theta = 0.0; cmd_robot.vector.x = 0.0f; cmd_robot.vector.y = 0.0f;
     }
     else if (fabs(cmd_robot.vector.x) > v_max_)
     {
-        ROS_WARN("[RoboSAR Controller]: Output velocity exceeds max value, clipping!");
+        ROS_WARN("[mtg Controller]: Output velocity exceeds max value, clipping!");
         cmd_robot.vector.x = copysignf(v_max_,cmd_robot.vector.x);
     }
     else if (fabs(theta) > w_max_)
     {
-      ROS_WARN("[RoboSAR Controller]: Angular velocity exceeds max value, clipping!");
+      ROS_WARN("[mtg Controller]: Angular velocity exceeds max value, clipping!");
         theta = copysign(w_max_,theta);
     }
 
-    ROS_INFO("[RoboSAR Controller]: CMD_LIN %f CMD_ANG %f Tracking %f %f at %f",cmd_robot.vector.x,theta,
+    ROS_INFO("[mtg Controller]: CMD_LIN %f CMD_ANG %f Tracking %f %f at %f",cmd_robot.vector.x,theta,
                                                                       path_.front()[0],path_.front()[1],path_.front()[2]);
 
     cmd_vel_.linear = cmd_robot.vector;

@@ -1,13 +1,13 @@
 // Created by Indraneel on 27/09/22
 
 #include <ros/ros.h>
-#include "robosar_messages/task_allocation.h"
+#include "mtg_messages/task_allocation.h"
 
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "ltc_head_on_collision_test_node");
   
-  robosar_messages::task_allocation task_allocation_msg;
+  mtg_messages::task_allocation task_allocation_msg;
 
   // Add agent 0
   task_allocation_msg.id.push_back("agent_0");
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
   // Create publisher
   ros::NodeHandle n;
   ros::Publisher task_allocation_pub = 
-                n.advertise<robosar_messages::task_allocation>("task_allocation", 1000);
+                n.advertise<mtg_messages::task_allocation>("task_allocation", 1000);
   // Add a delay
   ros::Duration(2.0).sleep();
 

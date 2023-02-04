@@ -5,7 +5,7 @@
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "robosar_traffic_controller_node");
+  ros::init(argc, argv, "mtg_traffic_controller_node");
 
   //move_base::MoveBase move_base( buffer );
   

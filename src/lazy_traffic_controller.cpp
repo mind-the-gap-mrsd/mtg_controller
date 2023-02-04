@@ -1,18 +1,18 @@
 // Created by Indraneel and Naren on 19/09/22
 
 #include "lazy_traffic_controller.hpp"
-#include "robosar_messages/agent_status.h"
+#include "mtg_messages/agent_status.h"
 
 
 LazyTrafficController::LazyTrafficController(): controller_active_(true), fleet_status_outdated_(false), map_frame_id_("map"),
-                                            velocity_calc_period_s(0.2), controller_period_s(0.2), nh_("robosar_controller"),tf_listener_(tf_buffer_)  {
+                                            velocity_calc_period_s(0.2), controller_period_s(0.2), nh_("mtg_controller"),tf_listener_(tf_buffer_)  {
     
-    status_subscriber_ = nh_.subscribe("/robosar_agent_bringup_node/status", 1, &LazyTrafficController::statusCallback, this);
+    status_subscriber_ = nh_.subscribe("/mtg_agent_bringup_node/status", 1, &LazyTrafficController::statusCallback, this);
 
     // subscribe to occupancy grid map
     occupancy_grid_subscriber_ = nh_.subscribe("/map", 1, &LazyTrafficController::occupancyGridCallback, this);
     // Get latest fleet info from agent bringup
-    status_client_ = nh_.serviceClient<robosar_messages::agent_status>("/robosar_agent_bringup_node/agent_status");
+    status_client_ = nh_.serviceClient<mtg_messages::agent_status>("/mtg_agent_bringup_node/agent_status");
     // Get active agents from agent bringup
     active_agents = getFleetStatusInfo();
     ROS_INFO(" [LT_CONTROLLER] Active fleet size %ld",active_agents.size());
@@ -47,8 +47,8 @@ void LazyTrafficController::statusCallback(const std_msgs::Bool &status_msg) {
 }
 
 
-bool LazyTrafficController::controllerServiceCallback(robosar_messages::robosar_controller::Request &req,
-                                                      robosar_messages::robosar_controller::Response &res) {
+bool LazyTrafficController::controllerServiceCallback(mtg_messages::mtg_controller::Request &req,
+                                                      mtg_messages::mtg_controller::Response &res) {
     
     std::lock_guard<std::mutex> lock(map_mutex);
     if(req.stop_controller) {
@@ -73,7 +73,7 @@ bool LazyTrafficController::controllerServiceCallback(robosar_messages::robosar_
             if(req.paths[i].poses.size() > 0) {
                 if(req.goal_type.empty()){
                     // If goal type is not specified assume it to be a homing task
-                    agent_map_[req.agent_names[i]].goal_type_ = robosar_messages::task_graph_getter::Response::FRONTIER;
+                    agent_map_[req.agent_names[i]].goal_type_ = mtg_messages::task_graph_getter::Response::FRONTIER;
                     agent_map_[req.agent_names[i]].goal_threshold_ = 0.4; // increase goal threshold for homing task
                     agent_map_[req.agent_names[i]].homing_ = true;
                 }
@@ -236,7 +236,7 @@ void LazyTrafficController::initialiseAgentMap(std::set<std::string> active_agen
 
 std::set<std::string> LazyTrafficController::getFleetStatusInfo() {
 
-    robosar_messages::agent_status srv;
+    mtg_messages::agent_status srv;
     // wait for service to be available
     status_client_.waitForExistence();
 

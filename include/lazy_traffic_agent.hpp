@@ -14,14 +14,14 @@
 #include <ros/ros.h>
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2/LinearMath/Matrix3x3.h>
-#include "robosar_messages/controller_status.h"
+#include "mtg_messages/controller_status.h"
 #include <nav_msgs/OccupancyGrid.h>
 #include <visualization_msgs/Marker.h>
 
 
 #include "Vector2.h"
 #include "lazy_traffic_rvo.hpp"
-#include "robosar_messages/task_graph_getter.h"
+#include "mtg_messages/task_graph_getter.h"
 
 typedef std::pair<std::string, float> AgentDistPair;
 
@@ -46,8 +46,8 @@ public:
                                                   ld_(0.4), v_max_(0.3), goal_threshold_(0.2), w_max_(0.5), at_rest(true),
                                                   preferred_velocity_(RVO::Vector2(0.0, 0.0)), current_velocity_(RVO::Vector2(0.0, 0.0)) {
         // Initialise publisher
-        pub_vel_ = nh_.advertise<geometry_msgs::Twist>("/robosar_agent_bringup_node/" + name + "/cmd_vel", 1);
-        pub_status_ = nh_.advertise<robosar_messages::controller_status>("/lazy_traffic_controller/" + name + "/status", 1);
+        pub_vel_ = nh_.advertise<geometry_msgs::Twist>("/mtg_agent_bringup_node/" + name + "/cmd_vel", 1);
+        pub_status_ = nh_.advertise<mtg_messages::controller_status>("/lazy_traffic_controller/" + name + "/status", 1);
         vel_marker_pub_ = nh_.advertise<visualization_msgs::Marker>("/lazy_traffic_controller/" + name + "/vel_marker", 1);
         status.data = status.IDLE;
 
@@ -90,7 +90,7 @@ public:
     bool homing_ = false;
     int goal_type_ = 0;
     double goal_threshold_;
-    robosar_messages::controller_status status;
+    mtg_messages::controller_status status;
 private:
     void ppProcessLookahead(geometry_msgs::Transform current_pose);
     bool checkifGoalReached();

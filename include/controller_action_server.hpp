@@ -8,8 +8,8 @@
 #include <algorithm>
 #include <queue>
 #include <actionlib/server/simple_action_server.h>
-#include <robosar_controller/PurePursuitAction.h>
-#include <robosar_controller/RobosarControllerAction.h>
+#include <mtg_controller/PurePursuitAction.h>
+#include <mtg_controller/mtgControllerAction.h>
 
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #include <tf/tf.h>
@@ -23,7 +23,7 @@
 #include <ackermann_msgs/AckermannDriveStamped.h>
 
 #include <kdl/frames.hpp>
-#include <robosar_controller/PurePursuitConfig.h>
+#include <mtg_controller/PurePursuitConfig.h>
 #include <angles/angles.h>
 
 class ControllerAction
@@ -58,11 +58,11 @@ private:
   geometry_msgs::Twist cmd_vel_;
 protected:
 
-  actionlib::SimpleActionServer<robosar_controller::RobosarControllerAction> as_; // NodeHandle instance must be created before this line. Otherwise strange error occurs.
+  actionlib::SimpleActionServer<mtg_controller::mtgControllerAction> as_; // NodeHandle instance must be created before this line. Otherwise strange error occurs.
   std::string action_name_;
   // create messages that are used to published feedback/result
-  robosar_controller::RobosarControllerFeedback feedback_;
-  robosar_controller::RobosarControllerResult result_;
+  mtg_controller::mtgControllerFeedback feedback_;
+  mtg_controller::mtgControllerResult result_;
 
 public:
 
@@ -77,7 +77,7 @@ public:
     as_.start();
   }
 
-  void executeCB(const robosar_controller::RobosarControllerGoalConstPtr &goal)
+  void executeCB(const mtg_controller::mtgControllerGoalConstPtr &goal)
   {
     // helper variables
     ros::Rate r(1);
@@ -273,21 +273,21 @@ public:
     // Apply limits
     if ( std::isnan(cmd_robot.vector.x) || std::isnan(cmd_robot.vector.y) || std::isnan(theta) )
     {
-      ROS_WARN("[RoboSAR Controller]: Output velocity contains NaN!");
+      ROS_WARN("[mtg Controller]: Output velocity contains NaN!");
       theta = 0.0; cmd_robot.vector.x = 0.0f; cmd_robot.vector.y = 0.0f;
     }
     else if (fabs(cmd_robot.vector.x) > v_max_)
     {
-        ROS_WARN("[RoboSAR Controller]: Output velocity exceeds max value, clipping!");
+        ROS_WARN("[mtg Controller]: Output velocity exceeds max value, clipping!");
         cmd_robot.vector.x = copysignf(v_max_,cmd_robot.vector.x);
     }
     else if (fabs(theta) > w_max_)
     {
-      ROS_WARN("[RoboSAR Controller]: Angular velocity exceeds max value, clipping!");
+      ROS_WARN("[mtg Controller]: Angular velocity exceeds max value, clipping!");
         theta = copysign(w_max_,theta);
     }
 
-    ROS_INFO("[RoboSAR Controller]: CMD_LIN %f CMD_ANG %f Tracking %f %f at %f",cmd_robot.vector.x,theta,
+    ROS_INFO("[mtg Controller]: CMD_LIN %f CMD_ANG %f Tracking %f %f at %f",cmd_robot.vector.x,theta,
                                                                       path_.front()[0],path_.front()[1],path_.front()[2]);
 
     cmd_vel_.linear = cmd_robot.vector;

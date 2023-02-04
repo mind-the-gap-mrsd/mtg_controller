@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(robosar_controller)
+project(mtg_controller)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -19,7 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   dynamic_reconfigure
   tf2
   tf2_ros
-  robosar_messages
+  mtg_messages
 )
 
 find_package(GTest REQUIRED)
@@ -75,7 +75,7 @@ find_package(orocos_kdl REQUIRED)
 add_action_files(
   FILES
   PurePursuit.action
-  RobosarController.action
+  mtgController.action
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -114,7 +114,7 @@ generate_dynamic_reconfigure_options(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES robosar_pure_pursuit
+#  LIBRARIES mtg_pure_pursuit
  CATKIN_DEPENDS actionlib actionlib_msgs geometry_msgs message_generation nav_msgs roscpp rospy std_msgs dynamic_reconfigure tf2 tf2_ros
 #  DEPENDS system_lib
 )
@@ -145,9 +145,9 @@ add_library(${PROJECT_NAME}
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-#add_executable(${PROJECT_NAME}_node src/robosar_controller_node.cpp)
-#add_executable(robosar_controller_client src/robosar_controller_client.cpp)
-add_executable(robosar_traffic_controller_node src/traffic_controller_node.cpp)
+#add_executable(${PROJECT_NAME}_node src/mtg_controller_node.cpp)
+#add_executable(mtg_controller_client src/mtg_controller_client.cpp)
+add_executable(mtg_traffic_controller_node src/traffic_controller_node.cpp)
 add_executable(ltc_head_on_collision_test src/ltc_head_on_collision_test.cpp)
 add_executable(ltc_static_obstacles_test_node src/ltc_static_obstacles_test.cpp)
 ## Rename C++ executable without prefix
@@ -158,13 +158,13 @@ add_executable(ltc_static_obstacles_test_node src/ltc_static_obstacles_test.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-#add_dependencies(${PROJECT_NAME}_node robosar_controller_client ${${PROJECT_NAME}_EXPORTED_TARGETS}  ${catkin_EXPORTED_TARGETS})
+#add_dependencies(${PROJECT_NAME}_node mtg_controller_client ${${PROJECT_NAME}_EXPORTED_TARGETS}  ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 #target_link_libraries(${PROJECT_NAME}_node
 #  ${catkin_LIBRARIES} ${orocos_kdl_LIBRARIES}
 #)
-#target_link_libraries(robosar_controller_client
+#target_link_libraries(mtg_controller_client
 #  ${catkin_LIBRARIES}
 #)
 
@@ -172,7 +172,7 @@ target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
 )
 
-target_link_libraries(robosar_traffic_controller_node
+target_link_libraries(mtg_traffic_controller_node
   ${catkin_LIBRARIES}
   ${PROJECT_NAME}
 )

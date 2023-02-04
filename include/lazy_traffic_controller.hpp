@@ -11,7 +11,7 @@
 #include <mutex>
 #include<unordered_map>
 
-#include "robosar_messages/robosar_controller.h"
+#include "mtg_messages/mtg_controller.h"
 #include "lazy_traffic_agent.hpp"
 // ROS stuff
 #include <tf/tf.h>
@@ -42,8 +42,8 @@ private:
     void initialiseAgentMap(std::set<std::string> active_agents);
     void computeVelocities(const ros::TimerEvent&);
     void occupancyGridCallback(const nav_msgs::OccupancyGrid &occupancy_grid_msg);
-    bool controllerServiceCallback(robosar_messages::robosar_controller::Request &req,
-                                   robosar_messages::robosar_controller::Response &res);
+    bool controllerServiceCallback(mtg_messages::mtg_controller::Request &req,
+                                   mtg_messages::mtg_controller::Response &res);
     void updateAgentPoses(void);
 
     // miscellanous

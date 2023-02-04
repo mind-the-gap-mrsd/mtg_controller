@@ -4,7 +4,7 @@
 
 #include <ros/ros.h>
 #include <actionlib/server/simple_action_server.h>
-#include <robosar_pure_pursuit/PurePursuitAction.h>
+#include <mtg_pure_pursuit/PurePursuitAction.h>
 
 #include <tf2_ros/transform_listener.h>
 #include <tf2_ros/transform_broadcaster.h>
@@ -16,7 +16,7 @@
 
 #include <kdl/frames.hpp>
 #include <dynamic_reconfigure/server.h>
-#include <robosar_pure_pursuit/PurePursuitConfig.h>
+#include <mtg_pure_pursuit/PurePursuitConfig.h>
 class PurePursuitAction
 {
 private:
@@ -29,8 +29,8 @@ private:
   geometry_msgs::TransformStamped lookahead_;
   std::string map_frame_id_, robot_frame_id_, lookahead_frame_id_, acker_frame_id_;
 
-  dynamic_reconfigure::Server<robosar_pure_pursuit::PurePursuitConfig> reconfigure_server_;
-  dynamic_reconfigure::Server<robosar_pure_pursuit::PurePursuitConfig>::CallbackType reconfigure_callback_;
+  dynamic_reconfigure::Server<mtg_pure_pursuit::PurePursuitConfig> reconfigure_server_;
+  dynamic_reconfigure::Server<mtg_pure_pursuit::PurePursuitConfig>::CallbackType reconfigure_callback_;
 
   // Vehicle parameters
   double L_;
@@ -49,11 +49,11 @@ private:
   ackermann_msgs::AckermannDriveStamped cmd_acker_;
 protected:
 
-  actionlib::SimpleActionServer<robosar_pure_pursuit::PurePursuitAction> as_; // NodeHandle instance must be created before this line. Otherwise strange error occurs.
+  actionlib::SimpleActionServer<mtg_pure_pursuit::PurePursuitAction> as_; // NodeHandle instance must be created before this line. Otherwise strange error occurs.
   std::string action_name_;
   // create messages that are used to published feedback/result
-  robosar_pure_pursuit::PurePursuitFeedback feedback_;
-  robosar_pure_pursuit::PurePursuitResult result_;
+  mtg_pure_pursuit::PurePursuitFeedback feedback_;
+  mtg_pure_pursuit::PurePursuitResult result_;
 
 public:
 
@@ -110,7 +110,7 @@ public:
     as_.start();
   }
 
-  void executeCB(const robosar_pure_pursuit::PurePursuitGoalConstPtr &goal)
+  void executeCB(const mtg_pure_pursuit::PurePursuitGoalConstPtr &goal)
   {
     // helper variables
     ros::Rate r(1);
@@ -179,7 +179,7 @@ public:
     
   }
 
-  void reconfigure(robosar_pure_pursuit::PurePursuitConfig &config, uint32_t level)
+  void reconfigure(mtg_pure_pursuit::PurePursuitConfig &config, uint32_t level)
   {
     v_max_ = config.max_linear_velocity;
   }

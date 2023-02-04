@@ -1,13 +1,13 @@
 // Created by Indraneel on 27/09/22
 
 #include <ros/ros.h>
-#include "robosar_messages/robosar_controller.h"
+#include "mtg_messages/mtg_controller.h"
 
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "ltc_static_obstacles_test_node");
   ros::NodeHandle nh_;
-  robosar_messages::robosar_controller srv;
+  mtg_messages::mtg_controller srv;
   std::vector<geometry_msgs::PoseStamped> traj;
   std::vector<geometry_msgs::PoseStamped> traj_2;
   geometry_msgs::PoseStamped pose1;
@@ -52,7 +52,7 @@ int main(int argc, char **argv)
   srv.request.agent_names.push_back("agent_0");
   // srv.request.agent_names.push_back("agent_1");
   srv.request.goal_type.push_back(0);
-  ros::ServiceClient controller_client = nh_.serviceClient<robosar_messages::robosar_controller>("robosar_controller/lazy_traffic_controller");
+  ros::ServiceClient controller_client = nh_.serviceClient<mtg_messages::mtg_controller>("mtg_controller/lazy_traffic_controller");
 
   // Call service
   controller_client.call(srv);

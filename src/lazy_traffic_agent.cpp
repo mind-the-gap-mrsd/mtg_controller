@@ -91,7 +91,7 @@ void Agent::updatePreferredVelocity()
 
     
     preferred_velocity_ = RVO::Vector2(0.0, 0.0);
-    if(goal_type_ == robosar_messages::task_graph_getter::Response::COVERAGE && agent_state_!=ROTATION_COMPLETED) {
+    if(goal_type_ == mtg_messages::task_graph_getter::Response::COVERAGE && agent_state_!=ROTATION_COMPLETED) {
       
       switch (agent_state_)
       {
@@ -127,7 +127,7 @@ void Agent::updatePreferredVelocity()
       }
      
     }
-    else if(goal_type_ != robosar_messages::task_graph_getter::Response::COVERAGE || agent_state_ == ROTATION_COMPLETED) {
+    else if(goal_type_ != mtg_messages::task_graph_getter::Response::COVERAGE || agent_state_ == ROTATION_COMPLETED) {
       current_path_.pop();
       preferred_velocity_ = RVO::Vector2(0.0, 0.0);
       stopAgent();

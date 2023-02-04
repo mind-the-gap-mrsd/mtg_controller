@@ -4,7 +4,7 @@
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "robosar_controller");
+  ros::init(argc, argv, "mtg_controller");
   LGControllerAction controller("agent1");
   ros::spin();
 
